@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:note_book/screens/signup.dart';
 import 'package:note_book/utility/showOTPDialogBox.dart';
@@ -12,7 +11,7 @@ class FirebaseAuthMethods {
   FirebaseAuthMethods(this._auth);
 
   // Email Signup Function
-  Future<void> SignUpWithEmail({
+  Future<void> signUpWithEmail({
     required String email,
     required String password,
     required BuildContext context,
@@ -21,15 +20,15 @@ class FirebaseAuthMethods {
       await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
-      ); // Creating User in Firebase
-      await SendEmailVerification(context); // Email Verification
+      ); // Creating User in Firebase using Email and Password
+      await sendEmailVerification(context); // Email Verification
     } on FirebaseException catch (e) {
       showSnackBar(context, e.message!);
     }
   }
 
   // Email Login Function
-  Future<void> LoginWithEmail({
+  Future<void> loginWithEmail({
     required String email,
     required String password,
     required BuildContext context,
@@ -40,7 +39,7 @@ class FirebaseAuthMethods {
         password: password,
       ); // Creating User in Firebase
       if (!_auth.currentUser!.emailVerified) {
-        await SendEmailVerification(context);
+        await sendEmailVerification(context);
       }
     } on FirebaseException catch (e) {
       showSnackBar(context, e.message!);
@@ -48,34 +47,50 @@ class FirebaseAuthMethods {
   }
 
   // PhoneNumber Signup Function
-  Future<void> SignUpWithPhone({
+  Future<void> signUpWithPhone({
     required String phoneNumber,
     required BuildContext context,
-    // required String password,
   }) async {
     TextEditingController controller = TextEditingController();
     try {
       await _auth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
         verificationCompleted: (PhoneAuthCredential credential) async {
-          final is_verified = await _auth.signInWithCredential(credential);
+          final isVerified = await _auth.signInWithCredential(credential);
 
-          Navigator.push(context,
-              (MaterialPageRoute(builder: (context) => SignUpScreen())));
+          if (isVerified.user != null &&
+              isVerified.additionalUserInfo != null) {
+            print('User :${isVerified.user}');
+            print('additionalUserInfo :${isVerified.additionalUserInfo}');
+            Navigator.push(
+                context,
+                (MaterialPageRoute(
+                    builder: (context) => const SignUpScreen())));
+          }
         },
         verificationFailed: (e) {
           showSnackBar(context, e.message!);
         },
-        codeSent: (String VerificationId, int? resendToken) async {
+        codeSent: (String verificationId, int? resendToken) async {
           showOTPDialog(
               context: context,
               controller: controller,
               onpress: () async {
                 PhoneAuthCredential phoneAuthCredential =
                     PhoneAuthProvider.credential(
-                        verificationId: VerificationId,
+                        verificationId: verificationId,
                         smsCode: controller.text.trim());
-                await _auth.signInWithCredential(phoneAuthCredential);
+                final user =
+                    await _auth.signInWithCredential(phoneAuthCredential);
+
+                if (user.user != null && user.additionalUserInfo != null) {
+                  print('User :${user.user}');
+                  print('additionalUserInfo :${user.additionalUserInfo}');
+                  Navigator.push(
+                      context,
+                      (MaterialPageRoute(
+                          builder: (context) => const SignUpScreen())));
+                }
               });
         },
         codeAutoRetrievalTimeout: (String verificationId) {},
@@ -109,7 +124,7 @@ class FirebaseAuthMethods {
   }
 
   // Email Verification
-  Future SendEmailVerification(BuildContext context) async {
+  Future sendEmailVerification(BuildContext context) async {
     try {
       _auth.currentUser!.sendEmailVerification();
       showSnackBar(context, 'Phone Verification Send!');

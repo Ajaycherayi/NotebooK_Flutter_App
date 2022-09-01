@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:note_book/firebase_options.dart';
+import 'package:note_book/global/colors.dart';
 import 'package:note_book/screens/splash_screen.dart';
 
 void main() async {
@@ -19,9 +20,15 @@ class NoteBook extends StatelessWidget {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
         const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
-    return const MaterialApp(
+    return MaterialApp(
+      theme: ThemeData(
+        colorScheme: ThemeData().colorScheme.copyWith(
+              primary: primaryColor,
+            ),
+      ),
+      color: Colors.white,
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+      home: const SplashScreen(),
     );
   }
 }

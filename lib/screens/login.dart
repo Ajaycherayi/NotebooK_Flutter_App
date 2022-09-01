@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:note_book/services/firebase_auth_methods.dart';
 
 class LoginScreen extends StatefulWidget {
-  LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({Key? key}) : super(key: key);
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -40,7 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               IconButton(
-                  onPressed: LoginUser,
+                  onPressed: loginUser,
                   icon: const Icon(Icons.account_circle_outlined))
             ],
           ),
@@ -49,8 +49,8 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void LoginUser() async {
-    FirebaseAuthMethods(FirebaseAuth.instance).LoginWithEmail(
+  void loginUser() async {
+    FirebaseAuthMethods(FirebaseAuth.instance).loginWithEmail(
         email: _emailController.text,
         password: _passwordController.text,
         context: context);

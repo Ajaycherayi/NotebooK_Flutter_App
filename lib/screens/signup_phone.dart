@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:note_book/services/firebase_auth_methods.dart';
 
 class SignUpWithPhoneScreen extends StatefulWidget {
-  SignUpWithPhoneScreen({Key? key}) : super(key: key);
+  const SignUpWithPhoneScreen({Key? key}) : super(key: key);
 
   @override
   State<SignUpWithPhoneScreen> createState() => _SignUpWithPhoneScreenState();
@@ -40,7 +40,7 @@ class _SignUpWithPhoneScreenState extends State<SignUpWithPhoneScreen> {
   }
 
   void PhoneSignUp() {
-    FirebaseAuthMethods(FirebaseAuth.instance).SignUpWithPhone(
+    FirebaseAuthMethods(FirebaseAuth.instance).signUpWithPhone(
         phoneNumber: '+91${_phoneController.text.trim()}', context: context);
   }
 }
